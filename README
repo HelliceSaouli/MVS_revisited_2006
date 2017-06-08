@@ -1,0 +1,4 @@
+Implementation of simple Multi-view stereo algorithm based on [1]
+
+[1] Michael Goesele, Brian Curless, and Steven M. Seitz. Multi-view stereo revisited. In IEEE Conference on Computer Vision and Pattern Recognition, pages 2402–2409, 2006.
+
