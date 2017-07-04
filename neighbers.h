@@ -48,6 +48,7 @@ class neighbers
 			Theta = atan2(sin(DeltaLong)*cos(Lat2), (cos(Lat1) * sin(Lat2))- (sin(Lat1)*cos(Lat2) * cos(DeltaLong)) );
 
 			return RadToDegree(Theta);
+
 		}
 };
 

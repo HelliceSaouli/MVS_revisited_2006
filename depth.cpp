@@ -34,11 +34,11 @@ float depth::getCorr_d()const
 }
 /************************************************************************/
 
-void depth::Initialization(const unsigned int &u,const unsigned int& v,const unsigned int& refrenceview ,const float& depth , const std::vector<unsigned int> ck, const unsigned int& vectorsize, const glm::vec3& pos3D)
+void depth::Initialization(const unsigned int &y,const unsigned int& x,const unsigned int& refrenceview ,const float& depth , const std::vector<unsigned int> ck, const unsigned int& vectorsize, const glm::vec3& pos3D)
 {
 	_refe  = refrenceview;
-	_u 	   = u;
-	_v     = v;
+	_y 	   = y;
+	_x     = x;
 	_di    = depth;
 	_valid = false;
 
@@ -59,7 +59,7 @@ void depth::ComputeNCCDomaines(const View& images)	// this the worst and hardest
 
 	// let's start with v0 it is vector of image refrence and it calculated one time
 	glm::vec3*  v0 = new glm::vec3[n_x_m_Size];
-	cv::Mat Roi_0 = images.getROI(_u,_v,_refe,n_x_m_Size);
+	cv::Mat Roi_0 = images.getROI0(_y,_x,_refe,n_x_m_Size);
 
 	//convert roi matrix to vector
 	int idx = 0;
@@ -67,9 +67,8 @@ void depth::ComputeNCCDomaines(const View& images)	// this the worst and hardest
 	{
 		for(int j = 0; j <Roi_0.cols; j++)
 		{
-		    cv::Vec4b intensity = Roi_0.at<cv::Vec4b>(i,j);
-		    v0[idx] = glm::vec3 (intensity.val[0], intensity.val[1], intensity.val[2]);
-
+		    cv::Vec3b intensity = Roi_0.at<cv::Vec3b>(i,j);
+		    v0[idx] = glm::vec3 ((float)intensity.val[0],(float) intensity.val[1],(float) intensity.val[2]);
 		    idx++;
 		}
 	}
@@ -91,23 +90,24 @@ void depth::ComputeNCCDomaines(const View& images)	// this the worst and hardest
 		{
 			for(int a = 0; a < n_x_m_Size;a++ )
 				v1[a] = glm::vec3 (255.0, 255.0, 255.0);
+
 		}
 		else
 		{
-			cv::Mat Roi_1 = images.getROI(u,v,_ck[i].c,n_x_m_Size);
+			cv::Mat Roi_1 = images.getROI1(v,u,_ck[i].c,n_x_m_Size);
 
 			//convert roi matrix to vector
 			int idx = 0;
-			for(int i  = 0; i< Roi_0.rows; i++ )
+			for(int i  = 0; i< Roi_1.rows; i++ )
 			{
-				for(int j = 0; j <Roi_0.cols; j++)
+				for(int j = 0; j <Roi_1.cols; j++)
 				{
-					cv::Vec4b intensity = Roi_1.at<cv::Vec4b>(i,j);
-					v1[idx] = glm::vec3 (intensity.val[0], intensity.val[1], intensity.val[2]);
-
+					cv::Vec3b intensity = Roi_1.at<cv::Vec3b>(i,j);
+					v1[idx] = glm::vec3 ((float)intensity.val[2],(float) intensity.val[1],(float) intensity.val[0]);
 					idx++;
 				}
 			}
+
 			// clear the Roi
 			Roi_1.release();
 		}
@@ -136,17 +136,17 @@ void depth::Valid(const float &threshold)
 	int counter = 0;
 	for(int i  = 0; i < _ck.size(); i++)	// count how many we corrlated view we had
 	{
-		if(_ck[i].ncc_d.getNCC() >= threshold)
+
+		if(_ck[i].ncc_d.getNCC() > threshold)
 			counter++;
 	}
-
 	if(counter >= 2)// this mean th depth is considred valid we go and collect _cv so we can calculate corr(d)
 	{
 		_valid = true;
 
 		for(int i  = 0; i < _ck.size(); i++)	// count how many we corrlated view we had
 		{
-			if(_ck[i].ncc_d.getNCC() >= threshold)
+			if(_ck[i].ncc_d.getNCC() > threshold)
 				{
 					nccData element = _ck[i];
 					_cv.push_back(element);	// feeling up the   The set of all views with NCC larger than thresh for a given depth d is denoted as Cv (d).

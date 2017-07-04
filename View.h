@@ -7,11 +7,12 @@
 
 #ifndef VIEW_H_
 #define VIEW_H_
+#include "headers.h"
 
 #include <opencv2/opencv.hpp>
 #include "glm/glm.hpp"
 
-#include "headers.h"
+
 
 //this class will just load images and put it into big tabel since we are not in GPU and stuff will be easy
 //camera paramtre will be loaded also
@@ -21,6 +22,7 @@ class View
 	private:
 
 		cv::Mat* 	_images;   					// the data holer for images to mark the pixel according to space carving algo we will use -1 for marked else not
+		cv::Mat*	_padedImages;				// the same view but they have extrat pixel to deal with boreders
 		glm::mat4* 	_projection; 				// the projection matrices from calibration process
 		glm::vec3*  _CameraPosition;		   // this will store camera position that we can get from decomposing projection matrix
 		glm::vec2*  _Lat_log;				  // latitude and longtitude so we can calculate the angular distance so we can pick the K nieghbore view
@@ -30,7 +32,7 @@ class View
 		int _width,_hight;
 		unsigned int _N;			// the number of input images and it hight and width
 
-		void CreateImageData(unsigned int);
+		void CreateImageData(unsigned int,unsigned int);
 		View();
 		virtual ~View();
 
@@ -42,8 +44,8 @@ class View
 		glm::vec2 getThe_i_LatitudeandLongtitdue(unsigned int)const;
 		glm::vec2* getAllLatitudeandLongtitdue()const;
 
-		cv::Mat getROI(unsigned int, unsigned int,unsigned int, unsigned int)const;
-
+		cv::Mat getROI0(unsigned int, unsigned int,unsigned int, unsigned int)const;	// this so stupid omg am i get worst
+		cv::Mat getROI1(unsigned int, unsigned int,unsigned int, unsigned int)const;
 };
 
 #endif /* VIEW_H_ */

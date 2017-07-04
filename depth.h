@@ -38,7 +38,7 @@ class depth
 {
 	private:
 		float _di;							// the i_th depth d of a pixel (u,v) of an R refrence view
-	    unsigned int _u,_v;				// pixel corrdinate
+	    unsigned int _x,_y;				// pixel corrdinate
 		unsigned int _refe;					// view refrence id
 		bool _valid;						// to confirme that this particluer depth is valid
 		std::vector<nccData> _ck;			// list of nigthbor view ck with thier ncc stored in one data
@@ -85,7 +85,7 @@ class depth
 
 		bool isInside(int u, int v, int h, int w)				// to make sure that the projected
 		{
-			if((v >= 0  && v < w) && (u  >=0 && u < h))
+			if((u >= 0  && u < w) && (v  >=0 && v < h))
 				return true;
 			else
 				return false;
